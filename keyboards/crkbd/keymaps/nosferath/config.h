@@ -44,10 +44,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #    define RGB_MATRIX_SPD_STEP 10
 
 /* Only one animation is enabled to save flash space (the board is nearly full).
- * SOLID_REACTIVE_WIDE lights the pressed key and fades out over the keys around it.
+ * SOLID_REACTIVE_MULTIWIDE lights each pressed key and fades out over the keys around it;
+ * glows from earlier presses keep fading instead of disappearing.
  * Solid color is always available as well. */
-#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE_WIDE
-#    define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_SOLID_REACTIVE_WIDE
+#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE_MULTIWIDE
+#    define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_SOLID_REACTIVE_MULTIWIDE
 #endif
 
 #define OLED_FONT_H "keyboards/crkbd/lib/glcdfont.c"
