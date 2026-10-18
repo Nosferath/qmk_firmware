@@ -373,7 +373,6 @@ static void render_status(void) {
  * 6x8-pixel tiles, so all 8 frames take under 600 bytes. */
 #    define BONGO_FRAME_MS 75       // idle animation speed
 #    define BONGO_PREP_MS 750       // paws stay raised this long after typing
-#    define BONGO_SLEEP_MS 15000    // stop the idle animation after this long
 
 static const uint8_t bongofont[] PROGMEM = {
     0xC1, 0xC1, 0xC2, 0x04, 0x08, 0x10,
@@ -486,7 +485,7 @@ static const uint8_t bongo_row_x[]   = {51, 49, 48, 57};
 static const uint8_t bongo_row_len[] = {5, 7, 8, 6};
 
 enum bongo_frame { BONGO_IDLE_LAST = 4, BONGO_PREP = 5, BONGO_TAP1 = 6, BONGO_TAP2 = 7 };
-enum bongo_state { BONGO_SLEEPING, BONGO_IDLE, BONGO_PREPPING, BONGO_TAPPING };
+enum bongo_state { BONGO_IDLE, BONGO_PREPPING, BONGO_TAPPING };
 
 static void draw_bongo_tile(uint8_t x, uint8_t y, uint8_t tile) {
     for (uint8_t i = 0; i < 6; i++) {
@@ -549,14 +548,11 @@ static void render_bongocat(void) {
     } else if (state == BONGO_PREPPING && timer_elapsed32(last_typed) >= BONGO_PREP_MS) {
         state      = BONGO_IDLE;
         idle_frame = 0;
-    } else if (state == BONGO_IDLE && timer_elapsed32(last_typed) >= BONGO_SLEEP_MS) {
-        state = BONGO_SLEEPING;
     }
 
     switch (state) {
         case BONGO_TAPPING: draw_bongo_frame(tap_frame); break;
         case BONGO_PREPPING: draw_bongo_frame(BONGO_PREP); break;
-        case BONGO_SLEEPING: draw_bongo_frame(BONGO_IDLE_LAST); break;
         default:
             draw_bongo_frame(BONGO_IDLE_LAST - idle_frame);
             if (timer_elapsed(anim_timer) > BONGO_FRAME_MS) {
