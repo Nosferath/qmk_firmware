@@ -274,6 +274,54 @@ static void type_next_email(void) {
     send_text_P(email_at(email_index));
 }
 
+/* ---------- Mac shortcuts ---------- */
+
+#define MAC_CMD MOD_BIT(KC_LGUI)
+#define MAC_CTRL MOD_BIT(KC_LCTL)
+#define MAC_ALT MOD_BIT(KC_LALT)
+#define MAC_SHIFT MOD_BIT(KC_LSFT)
+
+static void tap_with_mods(uint8_t mods, uint8_t keycode) {
+    register_mods(mods);
+    tap_code(keycode);
+    unregister_mods(mods);
+}
+
+// On a Mac, make keys behave like on Linux. Returns true when handled.
+static bool process_mac(uint16_t keycode, uint8_t mods) {
+    uint8_t shift = mods & MOD_MASK_SHIFT ? MAC_SHIFT : 0;
+    switch (keycode) {
+        // Home/End: line start/end; with Ctrl, document start/end.
+        case KC_HOME:
+        case KC_END: {
+            bool    home = keycode == KC_HOME;
+            uint8_t key  = (mods & MOD_MASK_CTRL) ? (home ? KC_UP : KC_DOWN) : (home ? KC_LEFT : KC_RIGHT);
+            tap_with_mods(MAC_CMD | shift, key);
+            return true;
+        }
+        // Print Screen: area screenshot to the clipboard; with Alt, the
+        // capture toolbar (which also records), like Omarchy.
+        case KC_PSCR:
+            if (mods & MOD_MASK_ALT) {
+                tap_with_mods(MAC_CMD | MAC_SHIFT, KC_5);
+            } else {
+                tap_with_mods(MAC_CMD | MAC_CTRL | MAC_SHIFT, KC_4);
+            }
+            return true;
+    }
+    // Super + arrows / numbers (with or without Shift): Omarchy's window
+    // shortcuts, sent as Ctrl+Option+Cmd for AeroSpace (see aerospace.toml).
+    if (mods & MOD_MASK_GUI) {
+        bool arrow  = keycode >= KC_RIGHT && keycode <= KC_UP;
+        bool number = keycode >= KC_1 && keycode <= KC_0;
+        if (arrow || number) {
+            tap_with_mods(MAC_CMD | MAC_CTRL | MAC_ALT | shift, keycode);
+            return true;
+        }
+    }
+    return false;
+}
+
 /* ---------- Key handling ---------- */
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -289,6 +337,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     clear_mods();
     if ((mods & MOD_BIT(KC_RALT)) && process_accent(keycode, mods)) {
         handled = true;
+    } else if (host_is_mac() && process_mac(keycode, mods)) {
+        cycle_key = 0;
+        handled   = true;
     } else {
         cycle_key = 0;
         switch (keycode) {
