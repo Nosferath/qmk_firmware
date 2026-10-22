@@ -190,13 +190,15 @@ static const accent_t PROGMEM accents[] = {
     {'c', 'c', CEDILLA, 0xE7},
 };
 
-// Right Alt + key for each accent, by computer layout. Accents are dead keys
-// (press, then the letter); the cedilla types ç directly.
-static const uint8_t PROGMEM dead_keys_colemak[] = {
+// Right Alt + key for each accent. Accents are dead keys (press, then the
+// letter); the cedilla types ç directly.
+// Linux Colemak: fixed key positions.
+static const uint8_t PROGMEM dead_keys_linux_colemak[] = {
     [ACUTE] = KC_F, [TILDE] = KC_GRV, [CIRCUMFLEX] = KC_X, [GRAVE] = KC_S, [DIAERESIS] = KC_G, [CEDILLA] = KC_C,
 };
-static const uint8_t PROGMEM dead_keys_mac_us[] = {
-    [ACUTE] = KC_E, [TILDE] = KC_N, [CIRCUMFLEX] = KC_I, [GRAVE] = KC_GRV, [DIAERESIS] = KC_U, [CEDILLA] = KC_C,
+// Mac (US or Colemak): Option + these letters, wherever the layout puts them.
+static const char PROGMEM dead_letters_mac[] = {
+    [ACUTE] = 'e', [TILDE] = 'n', [CIRCUMFLEX] = 'i', [GRAVE] = '`', [DIAERESIS] = 'u', [CEDILLA] = 'c',
 };
 
 static void send_accented(const accent_t *entry, bool upper) {
@@ -205,7 +207,13 @@ static void send_accented(const accent_t *entry, bool upper) {
         send_unicode_hex(pgm_read_byte(&entry->codepoint) - (upper ? 0x20 : 0));
         return;
     }
-    uint8_t dead_key = pgm_read_byte(host_is_colemak() ? &dead_keys_colemak[accent] : &dead_keys_mac_us[accent]);
+    uint8_t dead_key;
+    if (host_is_mac()) {
+        char letter = pgm_read_byte(&dead_letters_mac[accent]);
+        dead_key    = letter == '`' ? KC_GRV : host_keycode(letter);
+    } else {
+        dead_key = pgm_read_byte(&dead_keys_linux_colemak[accent]);
+    }
     if (accent == CEDILLA) {
         tap_code16(upper ? RALT(LSFT(dead_key)) : RALT(dead_key));
         return;
