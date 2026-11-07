@@ -56,3 +56,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Mouse keys: steady cursor speed; hold Slow (MS_ACL0) or Fast (MS_ACL2) to change it.
 #define MK_3_SPEED
 #define MK_MOMENTARY_ACCEL
+#define MK_C_OFFSET_UNMOD 12 // Normal: 12 px every 16 ms (default 16 was too fast)
+#define MK_C_OFFSET_0 2      // Slow: 2 px every 12 ms (default 1 px every 32 ms was too slow)
+#define MK_C_INTERVAL_0 12
