@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Anything the firmware types itself (accents, ∴, emails) is translated
  * for the computer's layout based on which of the two is active.
  */
-enum layers { _QWERTY, _COLEMAK, _NUM, _SYM, _ADJ };
+enum layers { _QWERTY, _COLEMAK, _NUM, _SYM, _ADJ, _MOUSE };
 
 enum custom_keycodes {
     LAYOUT_TG = SAFE_RANGE, // switch between QWERTY and Colemak setups
@@ -68,7 +68,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_NUM] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-       KC_TAB,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                         KC_6,    KC_7,    KC_8,    KC_9,    KC_0, KC_BSPC,
+   TG(_MOUSE),    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                         KC_6,    KC_7,    KC_8,    KC_9,    KC_0, KC_BSPC,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LCTL, KC_LALT, XXXXXXX, XXXXXXX, XXXXXXX, COMPOSE,                      KC_LEFT, KC_DOWN,   KC_UP,KC_RIGHT,  KC_F11,  KC_F12,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
@@ -99,6 +99,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_LSFT, RM_NEXT, RM_HUED, RM_SATD, RM_VALD, RM_SPDD,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           KC_LGUI, _______,  KC_SPC,     KC_ENT, _______, KC_RALT
+                                      //`--------------------------'  `--------------------------'
+  ),
+
+  // Mouse: turned on and off with Tab on the numbers layer; Tab here turns it off.
+  // Right hand moves the cursor (same keys as the arrows) and scrolls (row above);
+  // left hand clicks. Hold Slow/Fast on the left thumb to change speed.
+  [_MOUSE] = LAYOUT_split_3x6_3(
+  //,-----------------------------------------------------.                    ,-----------------------------------------------------.
+   TG(_MOUSE), KC_WBAK, KC_WFWD, XXXXXXX, XXXXXXX, XXXXXXX,                      MS_WHLL, MS_WHLD, MS_WHLU, MS_WHLR, XXXXXXX, XXXXXXX,
+  //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
+      KC_LCTL, KC_LALT, MS_BTN3, MS_BTN2, MS_BTN1, XXXXXXX,                      MS_LEFT, MS_DOWN,   MS_UP, MS_RGHT, XXXXXXX, XXXXXXX,
+  //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
+      KC_LSFT, KC_LGUI, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+  //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
+                                          MS_ACL0, MS_ACL2, MS_BTN1,    MS_BTN1, MS_BTN2, XXXXXXX
                                       //`--------------------------'  `--------------------------'
   )
 };
@@ -404,6 +419,7 @@ static void render_status(void) {
         case _NUM: write_line(3, PSTR(" NUM "), true); break;
         case _SYM: write_line(3, PSTR(" SYM "), true); break;
         case _ADJ: write_line(3, PSTR(" ADJ "), true); break;
+        case _MOUSE: write_line(3, PSTR("MOUSE"), true); break;
         default:   write_line(3, PSTR("     "), false); break;
     }
 

@@ -1,4 +1,4 @@
-MOUSEKEY_ENABLE = no    # Mouse keys (unused)
+MOUSEKEY_ENABLE = yes   # Mouse keys (mouse layer)
 RGBLIGHT_ENABLE = no
 RGB_MATRIX_ENABLE = yes
 OLED_ENABLE     = yes

@@ -52,3 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #define OLED_FONT_H "keyboards/crkbd/lib/glcdfont.c"
+
+// Mouse keys: steady cursor speed; hold Slow (MS_ACL0) or Fast (MS_ACL2) to change it.
+#define MK_3_SPEED
+#define MK_MOMENTARY_ACCEL
